@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نبض (Nabdh) | إدارة المرضى</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .patient-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--side-bg);
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 15px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-male   { background: #dbeafe; color: #1d4ed8; }
+        .badge-female { background: #fce7f3; color: #9d174d; }
+
+        .action-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .btn-edit   { color: #f59e0b; }
+        .btn-edit:hover   { background: #fef3c7; }
+        .btn-delete { color: #ef4444; }
+        .btn-delete:hover { background: #fee2e2; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(16,42,90,0.4);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .modal-box h3 { margin-top: 0; color: var(--side-bg); font-size: 18px; margin-bottom: 20px; }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-grid .full { grid-column: 1 / -1; }
+        .modal-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 13px;
+            outline: none;
+        }
+        .modal-input:focus { border-color: #00d4ff; }
+        .modal-label { font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px; display: block; }
+        .modal-footer { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+        .btn-save {
+            background: var(--side-bg);
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: var(--side-bg);
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 999;
+        }
+        .toast.show { opacity: 1; }
+
+        .ui-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 13px;
+            margin-bottom: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body class="medicare-theme">
+
+   <aside class="sidebar">
+        <div class="brand-section">
+            <div class="brand-logo-box"></div>
+            <div>
+                <span class="brand-name">نبض (Nabdh)</span>
+                <span class="brand-sub">لإدارة الرعاية الصحية</span>
+            </div>
+        </div>
+
+        <nav class="side-menu">
+            <p class="menu-label">القائمة الرئيسية</p>
+
+            <a href="dashboard.html" class="menu-item ">
+                <i class="fas fa-th-large"></i> لوحة التحكم
+            </a>
+            <a href="patients.html" class="menu-item active">
+                <i class="fas fa-hospital-user"></i> إدارة المرضى
+            </a>
+            <a href="appointments.html" class="menu-item">
+                <i class="fas fa-calendar-alt"></i> المواعيد
+            </a>
+            <a href="doctors.html" class="menu-item ">
+                <i class="fas fa-user-md"></i> إدارة الأطباء
+            </a>
+
+            <div style="flex-grow:1;"></div>
+
+            <a href="#" class="menu-item" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; margin-top:10px;">
+                <i class="fas fa-cog"></i> الإعدادات
+            </a>
+        </nav>
+
+        <button id="darkToggle" class="dark-toggle-btn">
+            <i class="fas fa-moon" id="darkIcon"></i>
+            <span id="darkLabel">الوضع الليلي</span>
+        </button>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-details">
+                    <p>د . حمـــزة</p>
+                    <span>مدير النظام</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="main-header">
+            <input type="text" id="searchInput" placeholder="بحث عن مريض..." class="top-search" oninput="filterPatients()">
+            <h2>إدارة المرضى</h2>
+        </header>
+
+        <!-- Stats -->
+        <section class="stats-summary">
+            <div class="stat-box blue-stat">
+                <h3>إجمالي المرضى</h3>
+                <p id="stat-total-patients">0</p>
+            </div>
+            <div class="stat-box green-stat">
+                <h3>ذكور</h3>
+                <p id="stat-male">0</p>
+            </div>
+            <div class="stat-box red-stat">
+                <h3>إناث</h3>
+                <p id="stat-female">0</p>
+            </div>
+        </section>
+        
+
+        <!-- Add patient -->
+        <section class="chart-card" style="margin-bottom:20px;">
+            <h3 style="margin-top:0; font-size:18px; margin-bottom:15px;">إضافة مريض جديد</h3>
+            <div id="formError" class="ui-error"></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="text"   id="newName"   placeholder="اسم المريض"       class="top-search" style="flex:1;">
+                <input type="number" id="newAge"    placeholder="العمر"             class="top-search" style="flex:0 0 90px;" min="1" max="120">
+                <select id="newGender" style="border-radius:20px; padding:10px; border:1px solid #ddd; background:white; cursor:pointer;">
+                    <option value="ذكر">ذكر</option>
+                    <option value="أنثى">أنثى</option>
+                </select>
+                <input type="text"   id="newPhone"  placeholder="رقم الهاتف"       class="top-search" style="flex:1;">
+                <select id="newDiag" style="border-radius:20px; padding:10px; border:1px solid #ddd; background:white; cursor:pointer;">
+                    <option value="باطنة">باطنة</option>
+                    <option value="جراحة عامة">جراحة عامة</option>
+                    <option value="طوارئ">طوارئ</option>
+                    <option value="أطفال">أطفال</option>
+                </select>
+                <button id="addBtn" style="background:var(--side-bg); color:white; border:none; padding:10px 25px; border-radius:20px; cursor:pointer; font-weight:bold;">
+                    <i class="fas fa-plus" style="margin-left:6px;"></i> إضافة
+                </button>
+            </div>
+        </section>
+
+        <!-- Table -->
+        <section class="chart-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>كود</th>
+                        <th>المريض</th>
+                        <th>العمر</th>
+                        <th>الجنس</th>
+                        <th>الهاتف</th>
+                        <th>التشخيص</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="patientsTable"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <button class="modal-close" id="closeModal"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-user-edit" style="margin-left:8px; color:var(--accent);"></i> تعديل بيانات المريض</h3>
+            <input type="hidden" id="editIndex">
+            <div class="modal-grid">
+                <div class="full">
+                    <label class="modal-label">اسم المريض</label>
+                    <input type="text" id="editName" class="modal-input" placeholder="الاسم الكامل">
+                </div>
+                <div>
+                    <label class="modal-label">العمر</label>
+                    <input type="number" id="editAge" class="modal-input" placeholder="العمر" min="1" max="120">
+                </div>
+                <div>
+                    <label class="modal-label">الجنس</label>
+                    <select id="editGender" class="modal-input">
+                        <option value="ذكر">ذكر</option>
+                        <option value="أنثى">أنثى</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="modal-label">رقم الهاتف</label>
+                    <input type="text" id="editPhone" class="modal-input" placeholder="الهاتف">
+                </div>
+                <div>
+                    <label class="modal-label">التشخيص / الحالة</label>
+                    <input type="text" id="editDiag" class="modal-input" placeholder="التشخيص">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelModal">إلغاء</button>
+                <button class="btn-save" id="saveEditBtn">
+                    <i class="fas fa-save" style="margin-left:6px;"></i> حفظ التعديلات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    <script src="app.js"></script>
+
+<!-- <script>
+// Outline 6: localStorage
+const DB_KEY = 'NABDH_PATIENTS_DB';
+
+// Outline 1: Objects & Classes — Patient class
+class Patient {
+    constructor(name, age, gender, phone, diagnosis) {
+        this.name      = name;
+        this.age       = age;
+        this.gender    = gender;
+        this.phone     = phone;
+        this.diagnosis = diagnosis;
+    }
+}
+
+// Outline 2: Arrays
+let patients = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+
+// Outline 5: Functions
+
+// Outline 10: Dynamic UI — Toast notification
+const showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+};
+
+function saveData() {
+    // Outline 6: localStorage
+    localStorage.setItem(DB_KEY, JSON.stringify(patients));
+}
+
+function updateStats() {
+    const males   = patients.filter(p => p.gender === 'ذكر').length;
+    const females = patients.filter(p => p.gender === 'أنثى').length;
+    document.getElementById('stat-total').textContent  = patients.length;
+    document.getElementById('stat-male').textContent   = males;
+    document.getElementById('stat-female').textContent = females;
+}
+
+function getInitials(name) {
+    return name.trim().charAt(0).toUpperCase();
+}
+
+// Outline 3: DOM Manipulation — render table
+function renderTable(data) {
+    const tb = document.getElementById('patientsTable');
+    tb.innerHTML = '';
+
+    if (data.length === 0) {
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:50px; color:#94a3b8;">لا يوجد مرضى حالياً</td></tr>';
+        return;
+    }
+
+    // Outline 2: Array Methods — map()
+    tb.innerHTML = data.map((p, i) => `
+        <tr>
+            <td style="color:#3b82f6; font-weight:bold;">#P-${String(i+1).padStart(3,'0')}</td>
+            <td>
+                <span class="patient-avatar">${getInitials(p.name)}</span>
+                <b>${p.name}</b>
+            </td>
+            <td>${p.age} سنة</td>
+            <td>
+                <span class="badge ${p.gender==='ذكر'?'badge-male':'badge-female'}">
+                    ${p.gender==='ذكر'?'<i class="fas fa-mars"></i>':'<i class="fas fa-venus"></i>'} ${p.gender}
+                </span>
+            </td>
+            <td>${p.phone}</td>
+            <td>${p.diagnosis}</td>
+            <td>
+                <button class="action-btn btn-edit" onclick="openEdit(${i})">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn btn-delete" onclick="deletePatient(${i})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`).join('');
+}
+
+function update() {
+    saveData();
+    updateStats();
+    renderTable(patients);
+}
+
+// Outline 8: Conditional Logic & Validation — show error in UI
+function showFormError(msg) {
+    const el = document.getElementById('formError');
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+}
+
+function addPatient() {
+    // Outline 9: Error Handling
+    try {
+        const name  = document.getElementById('newName').value.trim();
+        const age   = document.getElementById('newAge').value.trim();
+        const gender= document.getElementById('newGender').value;
+        const phone = document.getElementById('newPhone').value.trim();
+        const diag  = document.getElementById('newDiag').value.trim();
+
+        // Outline 8: Validation
+        if (!name)  { showFormError('⚠️ يرجى إدخال اسم المريض'); return; }
+        if (!age || isNaN(age) || age < 1 || age > 120) { showFormError('⚠️ يرجى إدخال عمر صحيح (1-120)'); return; }
+        if (!phone) { showFormError('⚠️ يرجى إدخال رقم الهاتف'); return; }
+        if (!diag)  { showFormError('⚠️ يرجى إدخال التشخيص أو الحالة'); return; }
+
+        // Outline 1: Objects — using class
+        const newPatient = new Patient(name, parseInt(age), gender, phone, diag);
+
+        // Outline 2: push()
+        patients.push(newPatient);
+        update();
+
+        // Clear inputs
+        ['newName','newAge','newPhone','newDiag'].forEach(id => document.getElementById(id).value = '');
+        showToast('✅ تم إضافة المريض بنجاح');
+    } catch(err) {
+        // Outline 9
+        showFormError('حدث خطأ غير متوقع');
+        console.error('Add patient error:', err);
+    }
+}
+
+function deletePatient(i) {
+    if (confirm(`حذف المريض "${patients[i].name}"؟`)) {
+        patients.splice(i, 1);
+        update();
+        showToast('🗑️ تم حذف المريض');
+    }
+}
+
+// Edit Modal
+function openEdit(i) {
+    const p = patients[i];
+    document.getElementById('editIndex').value   = i;
+    document.getElementById('editName').value    = p.name;
+    document.getElementById('editAge').value     = p.age;
+    document.getElementById('editGender').value  = p.gender;
+    document.getElementById('editPhone').value   = p.phone;
+    document.getElementById('editDiag').value    = p.diagnosis;
+    document.getElementById('editModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.remove('open');
+}
+
+function saveEdit() {
+    try {
+        const i     = parseInt(document.getElementById('editIndex').value);
+        const name  = document.getElementById('editName').value.trim();
+        const age   = document.getElementById('editAge').value.trim();
+        const gender= document.getElementById('editGender').value;
+        const phone = document.getElementById('editPhone').value.trim();
+        const diag  = document.getElementById('editDiag').value.trim();
+
+        // Outline 8: Validation
+        if (!name || !age || !phone || !diag) {
+            alert('يرجى ملء جميع الحقول');
+            return;
+        }
+
+        // Outline 2: Array update via index
+        patients[i] = new Patient(name, parseInt(age), gender, phone, diag);
+        update();
+        closeModal();
+        showToast('✏️ تم تحديث بيانات المريض');
+    } catch(err) {
+        console.error('Edit error:', err);
+        alert('حدث خطأ أثناء التعديل');
+    }
+}
+
+// Outline 7: Live Search & Filter
+function filterPatients() {
+    const term = document.getElementById('searchInput').value.toLowerCase();
+    // Outline 2: filter()
+    const filtered = patients.filter(p =>
+        p.name.toLowerCase().includes(term) ||
+        p.diagnosis.toLowerCase().includes(term) ||
+        p.phone.includes(term)
+    );
+    renderTable(filtered);
+}
+
+// Outline 4: Event Listeners — use addEventListener()
+document.getElementById('addBtn').addEventListener('click', addPatient);
+document.getElementById('closeModal').addEventListener('click', closeModal);
+document.getElementById('cancelModal').addEventListener('click', closeModal);
+document.getElementById('saveEditBtn').addEventListener('click', saveEdit);
+
+document.getElementById('newDiag').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') addPatient();
+});
+
+// Outline 10: Dynamic UI — live counter updates on load
+window.onload = update;
+</script> -->
+</body>
+</html>

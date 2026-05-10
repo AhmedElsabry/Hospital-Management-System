@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctors Page</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body class="medicare-theme">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand-section">
+            <div class="brand-logo-box"></div>
+            <div>
+                <span class="brand-name">نبض (Nabdh)</span>
+                <span class="brand-sub">لإدارة الرعاية الصحية</span>
+            </div>
+        </div>
+
+        <nav class="side-menu">
+            <p class="menu-label">القائمة الرئيسية</p>
+
+            <a href="dashboard.html" class="menu-item ">
+                <i class="fas fa-th-large"></i> لوحة التحكم
+            </a>
+            <a href="patients.html" class="menu-item">
+                <i class="fas fa-hospital-user"></i> إدارة المرضى
+            </a>
+            <a href="appointments.html" class="menu-item">
+                <i class="fas fa-calendar-alt"></i> المواعيد
+            </a>
+            <a href="doctors.html" class="menu-item active">
+                <i class="fas fa-user-md"></i> إدارة الأطباء
+            </a>
+
+            <div style="flex-grow:1;"></div>
+
+            <a href="#" class="menu-item" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; margin-top:10px;">
+                <i class="fas fa-cog"></i> الإعدادات
+            </a>
+        </nav>
+
+        <button id="darkToggle" class="dark-toggle-btn">
+            <i class="fas fa-moon" id="darkIcon"></i>
+            <span id="darkLabel">الوضع الليلي</span>
+        </button>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-details">
+                    <p>د . حمـــزة</p>
+                    <span>مدير النظام</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+    <div class="page-header">
+        <div>
+            <h4>إدارة الأطباء</h4>
+            <p>0 طبيب مسجل في النظام</p>
+        </div>
+        <!-- ✅ ربط زرار الإضافة بالدالة الصح -->
+        <button class="btn-primary-custom" onclick="openAddDoctorModal()">
+            <i class="fas fa-plus"></i> إضافة طبيب جديد
+        </button>
+    </div>
+
+    <div class="data-card">
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <!-- ✅ الدالة الصح -->
+                <input type="text" id="doctorSearch"
+                       placeholder="بحث باسم الطبيب أو التخصص..."
+                       oninput="filterDoctorTable(this.value)">
+            </div>
+            <!-- ✅ الدالة الصح -->
+            <select class="filter-select" onchange="filterDoctorTableByStatus(this.value)">
+                <option value="">جميع الحالات</option>
+                <option value="نشط">نشط</option>
+                <option value="إجازة">إجازة</option>
+            </select>
+        </div>
+
+        <table class="custom-table" id="doctorTable">
+            <thead>
+                <tr>
+                    <th>كود الطبيب</th>
+                    <th>اسم الطبيب</th>
+                    <th>التخصص</th>
+                    <th>الحالة</th>
+                    <th>رقم الهاتف</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+    <script src="app.js"></script>
+</body>
+</html>

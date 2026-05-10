@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نبض (Nabdh) | تسجيل الدخول</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --side-bg: #102a5a;
+            --main-bg: #f4f7fe;
+            --active-menu: #1e3d7d;
+            --accent: #00d4ff;
+            --text-muted: #64748b;
+        }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+
+        body {
+            background: var(--main-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        .login-wrapper {
+            display: flex;
+            width: 900px;
+            min-height: 520px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(16,42,90,0.15);
+        }
+
+        /* Left Panel - Branding */
+        .login-brand {
+            background: var(--side-bg);
+            width: 380px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-brand::before {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -60px;
+            width: 200px;
+            height: 200px;
+            background: rgba(0,212,255,0.08);
+            border-radius: 50%;
+        }
+        .login-brand::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 150px;
+            height: 150px;
+            background: rgba(0,212,255,0.05);
+            border-radius: 50%;
+        }
+
+        .brand-logo-box-lg {
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .login-brand h1 {
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .login-brand p {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .brand-tagline {
+            margin-top: 40px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        /* Right Panel - Form */
+        .login-form-panel {
+            background: white;
+            flex: 1;
+            padding: 50px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form-panel h2 {
+            font-size: 22px;
+            color: var(--side-bg);
+            margin-bottom: 6px;
+        }
+        .login-form-panel .sub-title {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 35px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--side-bg);
+            margin-bottom: 8px;
+        }
+        .input-icon-wrap {
+            position: relative;
+        }
+        .input-icon-wrap i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 42px 12px 15px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+            background: #f8fafc;
+        }
+        .form-input:focus {
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+        }
+
+        .remember-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        .remember-row label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .remember-row a {
+            font-size: 13px;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--side-bg);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+        .btn-login:hover { background: var(--active-menu); }
+        .btn-login:active { transform: scale(0.98); }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: none;
+        }
+        .success-msg {
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+
+    <!-- Brand Panel -->
+    <div class="login-brand">
+        <div class="brand-logo-box-lg"></div>
+        <h1>نبض (Nabdh)</h1>
+        <p>نظام إدارة الرعاية الصحية<br>المتكامل للمستشفيات والعيادات</p>
+        <div class="brand-tagline">
+            <i class="fas fa-shield-alt" style="margin-left:6px;"></i>
+            بياناتك محمية وآمنة
+        </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="login-form-panel">
+        <h2>مرحباً بعودتك 👋</h2>
+        <p class="sub-title">سجّل دخولك للوصول إلى لوحة التحكم</p>
+
+        <div class="error-msg" id="errorMsg">
+            <i class="fas fa-exclamation-circle" style="margin-left:6px;"></i>
+            <span id="errorText"></span>
+        </div>
+        <div class="success-msg" id="successMsg">
+            <i class="fas fa-check-circle" style="margin-left:6px;"></i>
+            تم تسجيل الدخول بنجاح! جاري التحويل...
+        </div>
+
+        <div class="form-group">
+            <label for="username">اسم المستخدم</label>
+            <div class="input-icon-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" class="form-input" placeholder="أدخل اسم المستخدم">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">كلمة المرور</label>
+            <div class="input-icon-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" class="form-input" placeholder="أدخل كلمة المرور">
+            </div>
+        </div>
+
+        <div class="remember-row">
+            <label>
+                <input type="checkbox" id="rememberMe"> تذكّرني
+            </label>
+            <a href="#">نسيت كلمة المرور؟</a>
+        </div>
+
+        <button class="btn-login" id="loginBtn">
+            <i class="fas fa-sign-in-alt" style="margin-left:8px;"></i> دخول
+        </button>
+    </div>
+</div>
+
+<script>
+// Outline 7: Cookies — helper functions
+function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+}
+
+function getCookie(name) {
+    return document.cookie.split('; ').reduce((acc, part) => {
+        const [k, v] = part.split('=');
+        return k === name ? decodeURIComponent(v) : acc;
+    }, '');
+}
+
+// Outline 6: localStorage — restore saved username
+const savedUser = getCookie('nabdh_user');
+if (savedUser) {
+    document.getElementById('username').value = savedUser;
+    document.getElementById('rememberMe').checked = true;
+}
+
+// Outline 10: Dynamic UI & User Feedback
+function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    document.getElementById('errorText').textContent = msg;
+    el.style.display = 'block';
+    document.getElementById('successMsg').style.display = 'none';
+}
+
+function showSuccess() {
+    document.getElementById('successMsg').style.display = 'block';
+    document.getElementById('errorMsg').style.display = 'none';
+}
+
+// Outline 4: Event Listeners
+document.getElementById('loginBtn').addEventListener('click', handleLogin);
+document.getElementById('password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleLogin();
+});
+
+// Outline 5: Functions — handleLogin
+// Outline 8: Conditional Logic & Validation
+// Outline 9: Error Handling
+function handleLogin() {
+    try {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const remember = document.getElementById('rememberMe').checked;
+
+        // Outline 8: Validation
+        if (!username || !password) {
+            showError('يرجى إدخال اسم المستخدم وكلمة المرور');
+            return;
+        }
+        if (password.length < 4) {
+            showError('كلمة المرور قصيرة جداً');
+            return;
+        }
+
+        // Outline 1: Objects — user model
+        const validUser = { username: 'admin', password: '1234' };
+
+        if (username === validUser.username && password === validUser.password) {
+            // Outline 7: Cookies — save preference
+            if (remember) {
+                setCookie('nabdh_user', username, 7);
+            } else {
+                setCookie('nabdh_user', '', -1);
+            }
+            // Outline 6: localStorage — save session
+            localStorage.setItem('NABDH_SESSION', JSON.stringify({ user: username, loggedIn: true }));
+            showSuccess();
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+        } else {
+            showError('اسم المستخدم أو كلمة المرور غير صحيحة');
+        }
+    } catch (err) {
+        // Outline 9: Error Handling
+        showError('حدث خطأ غير متوقع، حاول مرة أخرى');
+        console.error('Login error:', err);
+    }
+}
+</script>
+</body>
+</html>

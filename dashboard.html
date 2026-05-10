@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نبض (Nabdh) | لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="medicare-theme">
+
+    <aside class="sidebar">
+        <div class="brand-section">
+            <div class="brand-logo-box"></div>
+            <div>
+                <span class="brand-name">نبض (Nabdh)</span>
+                <span class="brand-sub">لإدارة الرعاية الصحية</span>
+            </div>
+        </div>
+
+        <nav class="side-menu">
+            <p class="menu-label">القائمة الرئيسية</p>
+
+            <a href="dashboard.html" class="menu-item active ">
+                <i class="fas fa-th-large"></i> لوحة التحكم
+            </a>
+            <a href="patients.html" class="menu-item">
+                <i class="fas fa-hospital-user"></i> إدارة المرضى
+            </a>
+            <a href="appointments.html" class="menu-item">
+                <i class="fas fa-calendar-alt"></i> المواعيد
+            </a>
+            <a href="doctors.html" class="menu-item ">
+                <i class="fas fa-user-md"></i> إدارة الأطباء
+            </a>
+
+            <div style="flex-grow:1;"></div>
+
+            <a href="#" class="menu-item" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; margin-top:10px;">
+                <i class="fas fa-cog"></i> الإعدادات
+            </a>
+        </nav>
+
+        <!-- بعد -->
+<button id="darkToggle" class="dark-toggle-btn">
+    <i class="fas fa-moon" id="darkIcon"></i>
+    <span id="darkLabel">الوضع الليلي</span>
+</button>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-details">
+                    <p>د . حمـــزة</p>
+                    <span>مدير النظام</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="main-header">
+            
+            <h2>نظرة عامة</h2>
+        </header>
+
+        <section class="stats-summary">
+            <div class="stat-box blue-stat"><h3>اجمالي الاطباء</h3><p id="stat-total">0</p></div>
+            <div class="stat-box green-stat"><h3>الاطباء النشطون</h3><p id="stat-active">0</p></div>
+            <div class="stat-box red-stat"><h3>الاطباء غير المتاحين</h3><p id="stat-away">0</p></div>
+        </section>
+        
+
+        <div class="chart-card">
+            <h3>تحليل الاطباء</h3>
+            <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+        </div>
+       
+        <section class="stats-summary" style="margin-bottom:20px;">
+            <div class="stat-box green-stat"><h3>نشط</h3><p id="pstat-active">0</p></div>
+            <div class="stat-box blue-stat"><h3>قيد الانتظار</h3><p id="pstat-waiting">0</p></div>
+            <div class="stat-box red-stat"><h3>ملغي</h3><p id="pstat-cancelled">0</p></div>
+        </section>
+
+        <div class="chart-card" style="margin-bottom:20px;">
+            <h3>تحليل المواعيد</h3>
+            <div class="chart-container"><canvas id="appointmentsChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>تحليل المرضى</h3>
+            <div class="chart-container">
+                <canvas id="patientsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card dept-card">
+            <h3 class="dept-title"><i class="fas fa-chart-pie"></i> توزيع الأقسام</h3>
+            <div class="dept-list">
+                <div class="dept-item">
+                    <div class="dept-info"><span>باطنة</span><span id="percent-internal">0%</span></div>
+                    <div class="progress-bar-bg"><div id="bar-internal" class="progress-fill bg-navy"></div></div>
+                </div>
+                <div class="dept-item">
+                    <div class="dept-info"><span>جراحة</span><span id="percent-surgery">0%</span></div>
+                    <div class="progress-bar-bg"><div id="bar-surgery" class="progress-fill bg-teal"></div></div>
+                </div>
+                <div class="dept-item">
+                    <div class="dept-info"><span>أطفال</span><span id="percent-pediatrics">0%</span></div>
+                    <div class="progress-bar-bg"><div id="bar-pediatrics" class="progress-fill bg-purple"></div></div>
+                </div>
+                <div class="dept-item">
+                    <div class="dept-info"><span>طوارئ</span><span id="percent-emergency">0%</span></div>
+                    <div class="progress-bar-bg"><div id="bar-emergency" class="progress-fill bg-orange"></div></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
