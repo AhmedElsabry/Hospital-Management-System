@@ -1,7 +1,7 @@
 console.log("%c Nabdh System v2.2 ", "background: #102a5a; color: #00d4ff; padding: 8px; border-radius: 5px; font-weight: bold;");
 
 // ===========================
-//  DARK MODE
+// Outline 1: Dark Mode
 // ===========================
 const darkToggle = document.getElementById("darkToggle");
 const darkIcon   = document.getElementById("darkIcon");
@@ -21,7 +21,7 @@ darkToggle?.addEventListener("click", () => {
 });
 
 // ===========================
-//  MENU ACTIVE STATE
+// Outline 2: Menu Active State
 // ===========================
 document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', function () {
@@ -31,7 +31,7 @@ document.querySelectorAll('.menu-item').forEach(item => {
 });
 
 // ===========================
-//  TOAST
+// Outline 3: Toast Notifications
 // ===========================
 function showToast(msg) {
     document.querySelector(".toast-msg")?.remove();
@@ -44,9 +44,10 @@ function showToast(msg) {
 }
 
 // ============================================================
-//  SECTION 1 — DOCTORS  (إدارة الأطباء)
+// Outline 4: Doctors Management (إدارة الأطباء)
 // ============================================================
 
+// Outline 4.1: localStorage — Doctors Default Data & Storage
 const defaultDoctors = [
     { code: "DR-001", name: "د. أحمد محمود علي", specialty: "باطنة",  status: "نشط",  phone: "0501234567" },
     { code: "DR-002", name: "د. سارة خالد حسن",  specialty: "أطفال",  status: "نشط",  phone: "0507654321" },
@@ -62,7 +63,7 @@ function saveDoctorsToStorage() {
     localStorage.setItem("doctors", JSON.stringify(doctors));
 }
 
-// --- Render ---
+// Outline 4.2: Render Doctor Table
 function renderDoctorTable(data) {
     const tbody = document.querySelector("#doctorTable tbody");
     if (!tbody) return;
@@ -101,7 +102,7 @@ function renderDoctorTable(data) {
     });
 }
 
-// --- Search & Filter ---
+// Outline 4.3: Search & Filter Doctors
 function filterDoctorTable(searchValue) {
     const statusFilter = document.querySelector(".filter-select")?.value || "";
     applyDoctorFilters(searchValue, statusFilter);
@@ -125,7 +126,7 @@ function applyDoctorFilters(searchValue, statusValue) {
     renderDoctorTable(filtered);
 }
 
-// --- Actions ---
+// Outline 4.4: Doctor Actions (View / Edit / Delete)
 function handleDoctorAction(type, code) {
     const doctor = doctors.find(d => d.code === code);
     if (!doctor) return;
@@ -153,13 +154,13 @@ function updateDoctorCount() {
     if (countEl) countEl.textContent = `${doctors.length} طبيب مسجل في النظام`;
 }
 
-// --- Code Generator ---
+// Outline 4.5: Auto Doctor Code Generator
 function generateNextDoctorCode() {
     doctorCounter++;
     return "DR-" + String(doctorCounter).padStart(3, "0");
 }
 
-// --- Modal Template ---
+// Outline 4.6: Doctor Modal Template
 function getDoctorModalHTML(title, subtitle, saveId) {
     return `
         <div class="modal-backdrop" id="modalBackdrop"></div>
@@ -226,7 +227,7 @@ function getDoctorModalHTML(title, subtitle, saveId) {
         </div>`;
 }
 
-// --- Validation ---
+// Outline 4.7: Doctor Form Validation
 function validateDoctorForm() {
     const name      = document.getElementById("field-name").value.trim();
     const specialty = document.getElementById("field-specialty").value;
@@ -283,7 +284,7 @@ function clearDoctorFormErrors() {
     });
 }
 
-// --- Add Modal ---
+// Outline 4.8: Add Doctor Modal
 function createAddDoctorModal() {
     if (document.getElementById("addDoctorModal")) return;
     const modal = document.createElement("div");
@@ -330,7 +331,7 @@ function closeAddDoctorModal() {
     setTimeout(() => modal.remove(), 200);
 }
 
-// --- Edit Modal ---
+// Outline 4.9: Edit Doctor Modal
 function createEditDoctorModal() {
     if (document.getElementById("editDoctorModal")) return;
     const modal = document.createElement("div");
@@ -379,9 +380,10 @@ function closeEditDoctorModal() {
 }
 
 // ============================================================
-//  SECTION 2 — APPOINTMENTS  (إدارة المواعيد)
+// Outline 5: Appointments Management (إدارة المواعيد)
 // ============================================================
 
+// Outline 5.1: localStorage — Appointments Data & Storage
 const APPOINTMENTS_DB = 'NABDH_FINAL_APP_DB';
 let appointments = JSON.parse(localStorage.getItem(APPOINTMENTS_DB)) || [];
 let myChart = null;
@@ -390,6 +392,7 @@ function saveAppointmentsToStorage() {
     localStorage.setItem(APPOINTMENTS_DB, JSON.stringify(appointments));
 }
 
+// Outline 5.2: Update & Sync Appointments
 function updateAppointments() {
     saveAppointmentsToStorage();
 
@@ -397,11 +400,11 @@ function updateAppointments() {
     if (tb) renderAppointmentsTable(tb, appointments);
 
     const chartCtx = document.getElementById('revenueChart');
-    if (chartCtx) {renderDashboard();
-    renderDepartments()}
-    renderAppointmentsDashboard()
+    if (chartCtx) { renderDashboard(); renderDepartments(); }
+    renderAppointmentsDashboard();
 }
 
+// Outline 5.3: Render Appointments Table
 function renderAppointmentsTable(tb, data) {
     tb.innerHTML = "";
 
@@ -437,7 +440,7 @@ function renderAppointmentsTable(tb, data) {
     }).join('');
 }
 
-// --- Populate doctor dropdown in appointments form ---
+// Outline 5.4: Doctor Dropdown for Appointments Form
 function populateDoctorDropdown() {
     const select = document.getElementById('newDoctor');
     if (!select) return;
@@ -454,16 +457,13 @@ function populateDoctorDropdown() {
         select.appendChild(opt);
     });
 
-    // restore previous value if still valid
     if (currentVal) select.value = currentVal;
 
-    // عند اختيار طبيب → يتملى التخصص تلقائياً ويتقفل
     select.onchange = function () {
         const specialtyField = document.getElementById('fieldspecialty');
         if (!specialtyField) return;
         const selectedOpt = this.options[this.selectedIndex];
         specialtyField.value = selectedOpt.dataset.specialty || '';
-        // قفل الحقل لو اتاختار طبيب، وافتحه لو مفيش اختيار
         if (this.value) {
             specialtyField.setAttribute('disabled', true);
             specialtyField.style.background = '#F5F8FF';
@@ -478,6 +478,7 @@ function populateDoctorDropdown() {
     };
 }
 
+// Outline 5.5: Add & Delete Appointments
 function addAppointment() {
     const p  = document.getElementById('newPatient');
     const d  = document.getElementById('newDoctor');
@@ -516,6 +517,7 @@ function deleteAppointment(i) {
     }
 }
 
+// Outline 5.6: Search & Filter Appointments
 function filterAppointments() {
     const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
     const tb = document.getElementById('appointmentsTable');
@@ -527,14 +529,16 @@ function filterAppointments() {
     );
     renderAppointmentsTable(tb, filtered);
 }
-//Dashboard
 
+// ============================================================
+// Outline 6: Dashboard (لوحة التحكم)
+// ============================================================
+
+// Outline 6.1: Doctors Dashboard Stats & Chart
 function renderDashboard() {
-    // ✅ من المرضى
     const totalEl = document.getElementById('stat-total');
     if (totalEl) totalEl.innerText = doctors.length;
 
-    // ✅ من الأطباء مش المواعيد
     const active = doctors.filter(d => d.status === 'نشط').length;
     const away   = doctors.filter(d => d.status === 'إجازة').length;
 
@@ -567,24 +571,24 @@ function renderDashboard() {
         }
     });
 }
+
+// Outline 6.2: Patients Dashboard Stats & Chart
 function renderPatientsDashboard() {
     const males   = patients.filter(p => p.gender === 'ذكر').length;
     const females = patients.filter(p => p.gender === 'أنثى').length;
+
+    const active    = appointments.filter(a => a.status === 'نشط').length;
+    const waiting   = appointments.filter(a => a.status === 'قيد الانتظار').length;
+    const cancelled = appointments.filter(a => a.status === 'ملغي').length;
 
     const activeEl    = document.getElementById('pstat-active');
     const waitingEl   = document.getElementById('pstat-waiting');
     const cancelledEl = document.getElementById('pstat-cancelled');
 
-    // إحصائيات المواعيد
-    const active    = appointments.filter(a => a.status === 'نشط').length;
-    const waiting   = appointments.filter(a => a.status === 'قيد الانتظار').length;
-    const cancelled = appointments.filter(a => a.status === 'ملغي').length;
-
     if (activeEl)    activeEl.innerText    = active;
     if (waitingEl)   waitingEl.innerText   = waiting;
     if (cancelledEl) cancelledEl.innerText = cancelled;
 
-    // ✅ Chart المرضى — عدد + ذكور + إناث
     const chartCanvas = document.getElementById('patientsChart');
     if (!chartCanvas) return;
 
@@ -604,12 +608,12 @@ function renderPatientsDashboard() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } }
-            }
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
         }
     });
 }
+
+// Outline 6.3: Appointments Dashboard Stats & Chart
 function renderAppointmentsDashboard() {
     const active    = appointments.filter(a => a.status === 'نشط').length;
     const waiting   = appointments.filter(a => a.status === 'قيد الانتظار').length;
@@ -626,9 +630,8 @@ function renderAppointmentsDashboard() {
     const chartCanvas = document.getElementById('appointmentsChart');
     if (!chartCanvas) return;
 
-    // ✅ نفس ستايل chart الـ dashboard
     if (window.appointmentsChart instanceof Chart) window.appointmentsChart.destroy();
-window.appointmentsChart = new Chart(chartCanvas.getContext('2d'), {
+    window.appointmentsChart = new Chart(chartCanvas.getContext('2d'), {
         type: 'bar',
         data: {
             labels: ['نشط', 'قيد الانتظار', 'ملغي'],
@@ -643,20 +646,12 @@ window.appointmentsChart = new Chart(chartCanvas.getContext('2d'), {
             responsive: true,
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
         }
     });
 }
 
-// ============================================================
-//  SECTION 4 — DASHBOARD DEPARTMENTS
-// ============================================================
-
+// Outline 6.4: Department Breakdown (Progress Bars)
 function renderDepartments() {
     const total = appointments.length;
 
@@ -678,10 +673,12 @@ function renderDepartments() {
         if (barEl)     barEl.style.width     = percent + '%';
     });
 }
+
 // ============================================================
-//  SECTION 3 — PATIENTS  (إدارة المرضى)
+// Outline 7: Patients Management (إدارة المرضى)
 // ============================================================
 
+// Outline 7.1: localStorage — Patients Data & Patient Class
 const PATIENTS_DB_KEY = 'NABDH_PATIENTS_DB';
 
 class Patient {
@@ -700,6 +697,7 @@ function savePatientsData() {
     localStorage.setItem(PATIENTS_DB_KEY, JSON.stringify(patients));
 }
 
+// Outline 7.2: Patients Stats (Total / Male / Female)
 function updatePatientsStats() {
     const males   = patients.filter(p => p.gender === 'ذكر').length;
     const females = patients.filter(p => p.gender === 'أنثى').length;
@@ -715,6 +713,7 @@ function getInitials(name) {
     return name.trim().charAt(0).toUpperCase();
 }
 
+// Outline 7.3: Render Patients Table
 function renderPatientsTable(data) {
     const tb = document.getElementById('patientsTable');
     if (!tb) return;
@@ -751,13 +750,15 @@ function renderPatientsTable(data) {
         </tr>`).join('');
 }
 
+// Outline 7.4: Update & Sync Patients
 function updatePatients() {
     savePatientsData();
     updatePatientsStats();
     renderPatientsTable(patients);
-    renderPatientsDashboard()
+    renderPatientsDashboard();
 }
 
+// Outline 7.5: Add Patient & Form Validation
 function showPatientFormError(msg) {
     const el = document.getElementById('formError');
     if (!el) return;
@@ -792,6 +793,7 @@ function addPatient() {
     }
 }
 
+// Outline 7.6: Delete Patient
 function deletePatient(i) {
     if (confirm(`حذف المريض "${patients[i].name}"؟`)) {
         patients.splice(i, 1);
@@ -800,6 +802,7 @@ function deletePatient(i) {
     }
 }
 
+// Outline 7.7: Edit Patient Modal
 function openEditPatient(i) {
     const p = patients[i];
     document.getElementById('editIndex').value   = i;
@@ -837,6 +840,7 @@ function savePatientEdit() {
     }
 }
 
+// Outline 7.8: Search & Filter Patients
 function filterPatients() {
     const term = document.getElementById('patientSearchInput')?.value.toLowerCase() || '';
     const filtered = patients.filter(p =>
@@ -848,10 +852,11 @@ function filterPatients() {
 }
 
 // ============================================================
-//  INIT
+// Outline 8: Initialization (DOMContentLoaded)
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // Doctors init
+
+    // Outline 8.1: Doctors Init
     renderDoctorTable(doctors);
     updateDoctorCount();
     populateDoctorDropdown();
@@ -862,18 +867,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".btn-primary-custom");
     addDoctorBtn?.addEventListener("click", openAddDoctorModal);
 
-    // Appointments init
+    // Outline 8.2: Appointments Init
     updateAppointments();
 
-    // ✅ Dashboard init — لو في revenueChart في الصفحة اشتغل
-    if (document.getElementById('revenueChart'))
-        { renderDashboard();
-            renderDepartments();
-            renderAppointmentsDashboard()
-        }
-        
+    // Outline 8.3: Dashboard Init
+    if (document.getElementById('revenueChart')) {
+        renderDashboard();
+        renderDepartments();
+        renderAppointmentsDashboard();
+    }
 
-    // Patients init
+    // Outline 8.4: Patients Init
     updatePatients();
 
     const addPatientBtn = document.getElementById('addBtn');
